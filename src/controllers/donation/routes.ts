@@ -43,7 +43,7 @@ export async function donationRoutes(app: FastifyInstance) {
       },
       schema: {
         tags: ["Donations"],
-        description: "Endpoint for OpenNode Donations",
+        description: "Endpoint for OpenNode (Bitcoin) Donations",
         body: stripeWebhookSchema,
         response: {
           200: responseStatusCode200,

@@ -1,7 +1,7 @@
 import { IPaymentService, PaymentInput } from "../IPaymentService";
-import { IFeeStrategy } from "../strategies/fee/IFeeStrategy";
-import { DefaultFeeStrategy } from "../strategies/fee/implementations/DefaultFeeStrategy";
-import { StripeFeeStrategy } from "../strategies/fee/implementations/StripeFeeStrategy";
+import { IFeeStrategy } from "../../strategies/fee/IFeeStrategy";
+import { DefaultFeeStrategy } from "../../strategies/fee/implementations/DefaultFeeStrategy";
+import { StripeFeeStrategy } from "../../strategies/fee/implementations/StripeFeeStrategy";
 
 interface RateCacheEntry {
   rate: number;
@@ -25,19 +25,18 @@ export class PaymentService implements IPaymentService {
       return { brlAmount: amount, exchangeRate: 1 };
     }
 
-    try {     
+    try {
       const exchangeRate = await this.getExchangeRate(from, to);
       const rawConverted = amount * exchangeRate;
       const brlAmount = Number(rawConverted.toFixed(2));
 
       return { brlAmount, exchangeRate };
     } catch (error) {
-      console.error(`Erro ao converter moeda ${from}->${to}:`, error);      
+      console.error(`Erro ao converter moeda ${from}->${to}:`, error);
       throw new Error(
         `Service Unavailable: Cannot convert currency from ${from} to ${to}`
       );
     }
-   
   }
 
   async getFeeAmountAndCalculateNetAmount(data: {
@@ -59,7 +58,7 @@ export class PaymentService implements IPaymentService {
   private async getExchangeRate(from: string, to: string): Promise<number> {
     const pairKey = `${from}-${to}`;
     const now = Date.now();
-  
+
     const cached = this.rateCache.get(pairKey);
     if (cached && now - cached.timestamp < this.CACHE_TTL) {
       return cached.rate;
@@ -77,9 +76,9 @@ export class PaymentService implements IPaymentService {
     }
 
     const data = await response.json();
-   
-    const resultKey = `${from}${to}`; 
-    const rateString = data[resultKey]?.bid; 
+
+    const resultKey = `${from}${to}`;
+    const rateString = data[resultKey]?.bid;
 
     if (!rateString) {
       throw new Error(
@@ -88,7 +87,7 @@ export class PaymentService implements IPaymentService {
     }
 
     const rate = Number(rateString);
-   
+
     this.rateCache.set(pairKey, {
       rate: rate,
       timestamp: now,

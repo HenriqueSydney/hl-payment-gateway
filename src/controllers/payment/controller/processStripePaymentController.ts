@@ -2,7 +2,7 @@ import { StripeWebhookDTO } from "../../../schemas/stripe.schema";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { makeProcessPaymentAndDonationUseCase } from "../../../use-cases/factories/makeProcessPaymentAndDonationUseCase";
 
-export async function processStripeDonationController(
+export async function processStripePaymentController(
   request: FastifyRequest<{
     Body: StripeWebhookDTO;
   }>,
@@ -22,9 +22,11 @@ export async function processStripeDonationController(
 
   const eventDate = new Date(event.created * 1000);
 
-  const processDonationUseCase = makeProcessPaymentAndDonationUseCase();
+  const projectId = paymentIntent.metadata?.projectId || null;
 
-  await processDonationUseCase.execute({
+  const processPaymentUseCase = makeProcessPaymentAndDonationUseCase();
+
+  await processPaymentUseCase.execute({
     payment: {
       provider: "STRIPE",
       providerTxId: paymentIntent.id,
@@ -36,20 +38,23 @@ export async function processStripeDonationController(
       payerName: null,
       payerDoc: "",
       status: paymentIntent.status === "succeeded" ? "COMPLETED" : "PENDING",
-      paymentType: "DONATION",
+      paymentType: "FREELANCE_JOB",
       method:
         paymentIntent.payment_method_types?.[0]?.toUpperCase() === "PIX"
           ? "PIX"
           : "CREDIT_CARD",
       rawMetadata: paymentIntent.metadata || {},
-      referenceId: (paymentIntent.metadata as any)?.projectId || null,
+      referenceId: projectId,
       paidAt: eventDate,
-      businessMeta: { projectId: "file-safe-hub", origin: "stripe_webhook" },
+      businessMeta: {
+        projectId: projectId,
+        origin: "stripe_webhook",
+      },
     },
   });
 
   return reply.status(201).send({
-    message: "Donation registered.",
+    message: "Payment registered.",
     received: true,
     ignored: false,
   });
