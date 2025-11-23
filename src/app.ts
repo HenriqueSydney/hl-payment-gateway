@@ -9,6 +9,7 @@ import {
 import { donationRoutes } from "./controllers/donation/routes";
 import formBody from "@fastify/formbody";
 import { validateRequestMiddleware } from "./middlewares/validateRequest";
+import { paymentRoutes } from "./controllers/payment/routes";
 
 const app = Fastify({
   logger: true,
@@ -28,6 +29,7 @@ app.addHook("preHandler", validateRequestMiddleware);
 const fastify = app.withTypeProvider<ZodTypeProvider>();
 
 fastify.register(donationRoutes, { prefix: "webhook" });
+fastify.register(paymentRoutes);
 
 app.setErrorHandler((error: any, _, reply) => {
   if (error.code === "FST_ERR_VALIDATION") {

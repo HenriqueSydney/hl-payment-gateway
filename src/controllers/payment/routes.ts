@@ -38,7 +38,7 @@ export async function paymentRoutes(app: FastifyInstance) {
   );
 
   app.post(
-    "/payment/stripe",
+    "/weebhook/payment/stripe",
     {
       config: {
         rawBody: true,
@@ -61,7 +61,7 @@ export async function paymentRoutes(app: FastifyInstance) {
   );
 
   app.post(
-    "/payment/opennode",
+    "/weebhook/payment/opennode",
     {
       config: {
         provider: "OPENNODE",
