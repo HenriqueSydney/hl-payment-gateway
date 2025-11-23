@@ -1,0 +1,83 @@
+// prisma/schema.prisma
+
+generator client {
+    provider   = "prisma-client"
+    output     = "../src/database/generated/prisma"
+    engineType = "client"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+enum PaymentStatus {
+    PENDING
+    COMPLETED
+    FAILED
+    REFUNDED
+    DISPUTED
+}
+
+enum Provider {
+    PAYPAL
+    STRIPE
+    OPENNODE
+    MERCADO_PAGO
+    MANUAL
+}
+
+enum PaymentType {
+    DONATION
+    FREELANCE_JOB
+    FREELANCE_ESCROW
+}
+
+enum PaymentMethod {
+    CREDIT_CARD
+    DEBIT_CARD
+    PIX
+    BITCOIN_ONCHAIN
+    BITCOIN_LIGHTNING
+    PAYPAL_BALANCE
+}
+
+model Payment {
+    id String @id @default(uuid())
+
+    // Classificação
+    provider    Provider
+    paymentType PaymentType    @map("payment_type")
+    method      PaymentMethod?
+
+    // Identificadores Externos
+    providerTxId String  @unique @map("provider_tx_id") @db.VarChar(255)
+    referenceId  String? @map("external_reference_id") @db.VarChar(255)
+    // ^ CRUCIAL: Aqui você guarda o ID do Job (ex: "job_123") ou ID do Usuário interno
+
+    // Dados do Pagador
+    payerEmail String? @map("payer_email") @db.VarChar(255)
+    payerName  String? @map("payer_name") @db.VarChar(255)
+    payerDoc   String? @map("payer_doc") @db.VarChar(20)
+
+    grossAmount Decimal @map("gross_amount") @db.Decimal(20, 8)
+    feeAmount   Decimal @map("fee_amount") @db.Decimal(20, 8)
+    netAmount   Decimal @map("net_amount") @db.Decimal(20, 8)
+    currency    String  @db.VarChar(3) // BRL, USD, BTC
+
+    exchangeRate Decimal? @map("exchange_rate") @db.Decimal(20, 8)
+    netAmountBrl Decimal? @map("net_amount_brl") @db.Decimal(15, 2)
+
+    status PaymentStatus @default(PENDING)
+
+    // Auditoria e Metadados
+    rawMetadata  Json? @map("raw_metadata")
+    businessMeta Json? @map("business_meta")
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    paidAt    DateTime? @map("paid_at")
+
+    @@index([providerTxId])
+    @@index([payerEmail])
+    @@index([referenceId])
+}

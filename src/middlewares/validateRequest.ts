@@ -1,0 +1,36 @@
+import { FastifyReply, FastifyRequest } from "fastify";
+import { StripeValidateWebhookPayloadStrategy } from "../services/strategies/validateWebhookPayload/implementations/StripeValidateWebhookPayloadStrategy";
+import { OpenNodeValidateWebhookPayloadStrategy } from "../services/strategies/validateWebhookPayload/implementations/OpenNodeValidateWebhookPayloadStrategy";
+import { DefaultValidateWebhookPayloadStrategy } from "../services/strategies/validateWebhookPayload/implementations/DefaultValidateWebhookPayloadStrategy";
+import { IValidateWebhookPayloadStrategy } from "../services/strategies/validateWebhookPayload/IValidateWebhookPayloadStrategy";
+
+const strategies: Record<string, IValidateWebhookPayloadStrategy> = {
+  STRIPE: new StripeValidateWebhookPayloadStrategy(),
+  OPENNODE: new OpenNodeValidateWebhookPayloadStrategy(),
+  DEFAULT: new DefaultValidateWebhookPayloadStrategy(),
+};
+
+export async function validateRequestMiddleware(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const provider = request.routeOptions.config.provider || "DEFAULT";
+
+  const strategy = strategies[provider] || strategies["DEFAULT"];
+
+  let payloadToValidate: any;
+
+  if (provider === "STRIPE") {
+    payloadToValidate = request.rawBody;
+  } else {
+    payloadToValidate = request.body;
+  }
+
+  const isValid = await strategy.validate(payloadToValidate, request.headers);
+
+  if (!isValid) {
+    return reply
+      .status(401)
+      .send({ message: "Webhook Signature Verification Failed" });
+  }
+}
