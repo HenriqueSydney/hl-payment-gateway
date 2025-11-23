@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { env } from "../../../../env";
+import { env } from "../../../env";
 import { IValidateWebhookPayloadStrategy } from "../IValidateWebhookPayloadStrategy";
 
 export class StripeValidateWebhookPayloadStrategy

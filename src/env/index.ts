@@ -4,6 +4,10 @@ const envSchema = z.object({
   OPEN_NODE_WEBHOOK_SECRET: z.string(),
   STRIPE_WEBHOOK_SECRET: z.string(),
   STRIPE_SECRET_KEY: z.string(),
+  PAYPAL_CLIENT_ID: z.string(),
+  PAYPAL_CLIENT_SECRET: z.string(),
+  PAYPAL_WEBHOOK_ID: z.string(),
+  PAYPAL_API_URL: z.url(),
   JWT_SECRET: z.string(),
 });
 

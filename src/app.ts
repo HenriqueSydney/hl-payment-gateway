@@ -10,10 +10,39 @@ import { donationRoutes } from "./controllers/donation/routes";
 import formBody from "@fastify/formbody";
 import { validateRequestMiddleware } from "./middlewares/validateRequest";
 import { paymentRoutes } from "./controllers/payment/routes";
+import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
+import rateLimit from "@fastify/rate-limit";
 
 const app = Fastify({
   logger: true,
 });
+
+app.register(helmet, {
+  global: true,
+  // Se você tiver uma rota de playground (Swagger), talvez precise ajustar o CSP
+});
+
+app.register(cors, {
+  origin: (origin, cb) => {
+    // Permite chamadas sem origin (como Postman ou Webhooks server-to-server)
+    if (!origin) return cb(null, true);
+
+    const allowedOrigins = [
+      "https://henriquelima.pro",
+      "https://admin.henriquelima.pro",
+      "http://localhost:3000", // Apenas para dev
+    ];
+
+    if (allowedOrigins.includes(origin)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Not allowed by CORS"), false);
+    }
+  },
+  methods: ["POST", "GET"], // Se sua API só recebe dados, não libere PUT/DELETE
+});
+
 app.register(formBody);
 
 app.register(fastifyRawBody, {

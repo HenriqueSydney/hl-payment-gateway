@@ -1,9 +1,8 @@
 import { SQSEvent } from "aws-lambda";
-import { prisma } from "../lib/prisma";
-import { PaymentService } from "../services/implementations/PaymentService";
 import { makePaymentRepository } from "../repositories/factories/makePaymentRepository";
+import { makePaymentService } from "../services/factories/makePaymentService";
 
-const paymentService = new PaymentService();
+const paymentService = makePaymentService();
 const paymentRepository = makePaymentRepository();
 
 export const handler = async (event: SQSEvent) => {

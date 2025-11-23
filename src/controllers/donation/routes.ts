@@ -10,6 +10,8 @@ import {
   responseStatusCode500,
 } from "../../schemas/fastifyResponse.schema";
 import { processOpenNodeDonationController } from "./controller/processOpenNodeDonationController";
+import { paypalWebhookSchema } from "../../schemas/paypal.schema";
+import { processPayPalDonationController } from "./controller/processPayPalDonationController";
 
 export async function donationRoutes(app: FastifyInstance) {
   app.post(
@@ -55,5 +57,27 @@ export async function donationRoutes(app: FastifyInstance) {
       },
     },
     processOpenNodeDonationController
+  );
+
+  app.post(
+    "/donation/paypal",
+    {
+      config: {
+        provider: "PAYPAL",
+      },
+      schema: {
+        tags: ["Donations"],
+        description: "Endpoint for PayPal Donations",
+        body: paypalWebhookSchema,
+        response: {
+          200: responseStatusCode200,
+          201: responseStatusCode201,
+          400: responseStatusCode400,
+          401: responseStatusCode401,
+          500: responseStatusCode500,
+        },
+      },
+    },
+    processPayPalDonationController
   );
 }

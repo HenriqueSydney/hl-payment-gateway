@@ -27,8 +27,6 @@ export class PaymentQueue {
         })
       );
     } catch (error) {
-      // Se falhar o envio para fila, LOGUE IMEDIATAMENTE.
-      // Isso é crítico pois o dinheiro entrou mas o processamento falhou.
       console.error(`FALHA AO ENFILEIRAR DOAÇÃO ${paymentId}`, error);
     }
   }

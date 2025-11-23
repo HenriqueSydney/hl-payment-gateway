@@ -3,10 +3,12 @@ import { StripeValidateWebhookPayloadStrategy } from "../strategies/validateWebh
 import { OpenNodeValidateWebhookPayloadStrategy } from "../strategies/validateWebhookPayload/implementations/OpenNodeValidateWebhookPayloadStrategy";
 import { DefaultValidateWebhookPayloadStrategy } from "../strategies/validateWebhookPayload/implementations/DefaultValidateWebhookPayloadStrategy";
 import { IValidateWebhookPayloadStrategy } from "../strategies/validateWebhookPayload/IValidateWebhookPayloadStrategy";
+import { PayPalValidateWebhookPayloadStrategy } from "../strategies/validateWebhookPayload/implementations/PayPalValidateWebhookPayloadStrategy";
 
 const strategies: Record<string, IValidateWebhookPayloadStrategy> = {
   STRIPE: new StripeValidateWebhookPayloadStrategy(),
   OPENNODE: new OpenNodeValidateWebhookPayloadStrategy(),
+  PAYPAL: new PayPalValidateWebhookPayloadStrategy(),
   DEFAULT: new DefaultValidateWebhookPayloadStrategy(),
 };
 

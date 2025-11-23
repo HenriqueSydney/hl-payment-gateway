@@ -2,6 +2,7 @@ import { IPaymentService, PaymentInput } from "../IPaymentService";
 import { IFeeStrategy } from "../../strategies/fee/IFeeStrategy";
 import { DefaultFeeStrategy } from "../../strategies/fee/implementations/DefaultFeeStrategy";
 import { StripeFeeStrategy } from "../../strategies/fee/implementations/StripeFeeStrategy";
+import { PayPalFeeStrategy } from "../../strategies/fee/implementations/PayPalFeeStrategy";
 
 interface RateCacheEntry {
   rate: number;
@@ -13,6 +14,7 @@ export class PaymentService implements IPaymentService {
   private readonly CACHE_TTL = 10 * 60 * 1000;
   private strategies: Record<string, IFeeStrategy> = {
     STRIPE: new StripeFeeStrategy(),
+    PAYPAL: new PayPalFeeStrategy(),
     DEFAULT: new DefaultFeeStrategy(),
   };
 

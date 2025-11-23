@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { IValidateWebhookPayloadStrategy } from "../IValidateWebhookPayloadStrategy";
-import { env } from "../../../../env";
+import { env } from "../../../env";
 
 export class OpenNodeValidateWebhookPayloadStrategy
   implements IValidateWebhookPayloadStrategy

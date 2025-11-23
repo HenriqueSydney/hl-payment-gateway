@@ -1,6 +1,7 @@
 import { verify } from "jsonwebtoken";
 import { IValidateWebhookPayloadStrategy } from "../IValidateWebhookPayloadStrategy";
-import { env } from "../../../../env";
+import { env } from "../../../env";
+
 
 export class DefaultValidateWebhookPayloadStrategy
   implements IValidateWebhookPayloadStrategy

@@ -1,5 +1,5 @@
+import { makePaymentQueue } from "../../queues/factories/makePaymentQueue";
 import { makePaymentRepository } from "../../repositories/factories/makePaymentRepository";
-import { PaymentService } from "../../services/implementations/PaymentService";
 import {
   IProcessPaymentAndDonationUseCase,
   ProcessPaymentAndDonationUseCase,
@@ -7,9 +7,6 @@ import {
 
 export function makeProcessPaymentAndDonationUseCase(): IProcessPaymentAndDonationUseCase {
   const paymentRepository = makePaymentRepository();
-  const paymentService = new PaymentService();
-  return new ProcessPaymentAndDonationUseCase(
-    paymentRepository,
-    paymentService
-  );
+  const paymentQueue = makePaymentQueue();
+  return new ProcessPaymentAndDonationUseCase(paymentRepository, paymentQueue);
 }
